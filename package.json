@@ -1,6 +1,6 @@
 {
   "name": "rn-dev-companion-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP Server - React Native Dev Companion for debugging with Claude Code. Real-time terminal logs, Hermes/CDP JS runtime logs, network inspector, Reactotron integration, iOS/Android native crash reports.",
   "author": "Jaqueline Gonzaga <jaqueline_gonzaga@hotmail.com>",
   "license": "MIT",
