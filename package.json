@@ -1,0 +1,64 @@
+{
+  "name": "rn-dev-companion-mcp",
+  "version": "1.0.0",
+  "description": "MCP Server - React Native Dev Companion for debugging with Claude Code. Real-time terminal logs, Hermes/CDP JS runtime logs, network inspector, Reactotron integration, iOS/Android native crash reports.",
+  "author": "Jaqueline Gonzaga <jaqueline_gonzaga@hotmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gonzagajaque/rn-dev-companion-mcp.git"
+  },
+  "homepage": "https://github.com/gonzagajaque/rn-dev-companion-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/gonzagajaque/rn-dev-companion-mcp/issues"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "rn-dev-companion-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "scripts/install.sh",
+    "rn-companion.config.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "install-mcp": "bash scripts/install.sh",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "react-native",
+    "reactotron",
+    "hermes",
+    "cdp",
+    "chrome-devtools-protocol",
+    "debug",
+    "debugging",
+    "claude-code",
+    "claude",
+    "ai",
+    "network-inspector",
+    "crash-reports",
+    "metro",
+    "expo"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "@types/ws": "^8.5.14",
+    "typescript": "^5.7.3"
+  }
+}

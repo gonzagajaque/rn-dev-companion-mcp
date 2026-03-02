@@ -1,0 +1,8 @@
+{
+  "reactotronPort": 9090,
+  "terminalLogBufferSize": 500,
+  "reactotronLogBufferSize": 500,
+  "autoDetectTerminal": true,
+  "watchPaths": [],
+  "filterPatterns": []
+}
