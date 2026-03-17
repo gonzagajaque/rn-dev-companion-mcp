@@ -60,13 +60,36 @@ function mapConsoleLevel(type: string): LogSeverity {
   }
 }
 
+function stringifyArg(arg: { type: string; value?: unknown; description?: string }): string {
+  if (arg.type === "string") return String(arg.value ?? arg.description ?? "");
+  if (arg.type === "number" || arg.type === "boolean") return String(arg.value);
+  if (arg.type === "undefined") return "undefined";
+  if (arg.description !== undefined) return String(arg.description);
+  if (arg.value !== undefined) {
+    if (typeof arg.value === "object" && arg.value !== null) {
+      try {
+        return JSON.stringify(arg.value);
+      } catch {
+        return "[Circular]";
+      }
+    }
+    return String(arg.value);
+  }
+  return `[${arg.type}]`;
+}
+
+function serializeArgValue(arg: { type: string; value?: unknown; description?: string }): unknown {
+  if (arg.value !== undefined) {
+    if (typeof arg.value === "object" && arg.value !== null) return arg.value;
+    return arg.value;
+  }
+  if (arg.description !== undefined) return arg.description;
+  return null;
+}
+
 export function parseCDPConsole(event: CDPConsoleEvent): Omit<HermesLogEntry, "id"> {
   const args = event.params.args || [];
-  const messageParts = args.map((arg) => {
-    if (arg.description !== undefined) return String(arg.description);
-    if (arg.value !== undefined) return String(arg.value);
-    return `[${arg.type}]`;
-  });
+  const messageParts = args.map(stringifyArg);
 
   const stackFrames = event.params.stackTrace?.callFrames;
   let stackTrace: string | undefined;
@@ -85,7 +108,7 @@ export function parseCDPConsole(event: CDPConsoleEvent): Omit<HermesLogEntry, "i
     timestamp: new Date().toISOString(),
     level: mapConsoleLevel(event.params.type),
     message: messageParts.join(" "),
-    args: args.map((a) => a.value ?? a.description),
+    args: args.map(serializeArgValue),
     stackTrace,
     source: "hermes",
     url,
