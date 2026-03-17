@@ -2,13 +2,17 @@ import { LogStore } from "../storage/log-store.js";
 
 export function handleGetApiCalls(
   store: LogStore,
-  args: { endpoint_filter?: string }
+  args: { endpoint_filter?: string; last_n?: number }
 ) {
   let calls = store.apiCalls.getAll();
 
   if (args.endpoint_filter) {
     const regex = new RegExp(args.endpoint_filter, "i");
     calls = calls.filter((c) => regex.test(c.url));
+  }
+
+  if (args.last_n) {
+    calls = calls.slice(-args.last_n);
   }
 
   return {

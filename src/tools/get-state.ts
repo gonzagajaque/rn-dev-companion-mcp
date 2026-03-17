@@ -2,13 +2,17 @@ import { LogStore } from "../storage/log-store.js";
 
 export function handleGetStateChanges(
   store: LogStore,
-  args: { store_name?: string }
+  args: { store_name?: string; last_n?: number }
 ) {
   let changes = store.stateChanges.getAll();
 
   if (args.store_name) {
     const regex = new RegExp(args.store_name, "i");
     changes = changes.filter((c) => regex.test(c.store) || regex.test(c.action));
+  }
+
+  if (args.last_n) {
+    changes = changes.slice(-args.last_n);
   }
 
   return {
