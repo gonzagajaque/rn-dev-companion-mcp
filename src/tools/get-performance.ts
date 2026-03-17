@@ -1,7 +1,14 @@
 import { LogStore } from "../storage/log-store.js";
 
-export function handleGetPerformance(store: LogStore) {
-  const entries = store.performanceEntries.getAll();
+export function handleGetPerformance(
+  store: LogStore,
+  args: { last_n?: number } = {}
+) {
+  let entries = store.performanceEntries.getAll();
+
+  if (args.last_n) {
+    entries = entries.slice(-args.last_n);
+  }
 
   return {
     content: [

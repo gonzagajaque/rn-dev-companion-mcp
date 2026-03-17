@@ -1,26 +1,26 @@
 {
-  "name": "rn-dev-companion-mcp",
-  "version": "1.0.1",
-  "description": "MCP Server - React Native Dev Companion for debugging with Claude Code. Real-time terminal logs, Hermes/CDP JS runtime logs, network inspector, Reactotron integration, iOS/Android native crash reports.",
+  "name": "wiretap-mcp",
+  "version": "2.0.0",
+  "description": "MCP Server — Real-time React Native debugging for Claude Code. Terminal logs, Hermes/CDP runtime, network inspector, Reactotron integration, iOS/Android crash reports.",
   "author": "Jaqueline Gonzaga <jaqueline_gonzaga@hotmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gonzagajaque/rn-dev-companion-mcp.git"
+    "url": "git+https://github.com/gonzagajaque/wiretap-mcp.git"
   },
-  "homepage": "https://github.com/gonzagajaque/rn-dev-companion-mcp#readme",
+  "homepage": "https://github.com/gonzagajaque/wiretap-mcp#readme",
   "bugs": {
-    "url": "https://github.com/gonzagajaque/rn-dev-companion-mcp/issues"
+    "url": "https://github.com/gonzagajaque/wiretap-mcp/issues"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "rn-dev-companion-mcp": "dist/index.js"
+    "wiretap-mcp": "dist/index.js"
   },
   "files": [
     "dist",
     "scripts/install.sh",
-    "rn-companion.config.json",
+    "wiretap.config.json",
     "LICENSE",
     "README.md"
   ],
@@ -35,6 +35,7 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": [
+    "wiretap",
     "mcp",
     "model-context-protocol",
     "react-native",

@@ -129,12 +129,14 @@ export class LogStore {
     reactotron: ReactotronLogEntry[];
     hermes: HermesLogEntry[];
     network: NetworkEntry[];
+    crashes: CrashLogEntry[];
   } {
     return {
       terminal: this.terminalLogs.search(query),
       reactotron: this.reactotronLogs.search(query),
       hermes: this.hermesLogs.search(query),
       network: this.networkCalls.search(query),
+      crashes: this.crashLogs.search(query),
     };
   }
 

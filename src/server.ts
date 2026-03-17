@@ -71,8 +71,8 @@ export function createCompanionServer(config: CompanionConfig) {
   };
 
   const server = new McpServer({
-    name: "rn-dev-companion",
-    version: "1.0.0",
+    name: "wiretap",
+    version: "2.0.0",
   });
 
   // --- Tools ---
@@ -112,9 +112,22 @@ export function createCompanionServer(config: CompanionConfig) {
 
   server.tool(
     "get_errors",
-    "Get consolidated errors and crashes from terminal, Reactotron, and Hermes",
-    {},
-    async () => handleGetErrors(store)
+    "Get consolidated errors and crashes from terminal, Reactotron, and Hermes with optional filtering",
+    {
+      source: z
+        .enum(["terminal", "reactotron", "hermes", "all"])
+        .optional()
+        .describe("Filter by error source"),
+      filter: z
+        .string()
+        .optional()
+        .describe("Regex filter for error messages"),
+      last_n: z
+        .number()
+        .optional()
+        .describe("Return only the last N errors"),
+    },
+    async (args) => handleGetErrors(store, args)
   );
 
   server.tool(
@@ -125,6 +138,10 @@ export function createCompanionServer(config: CompanionConfig) {
         .string()
         .optional()
         .describe("Regex filter for API endpoint URLs"),
+      last_n: z
+        .number()
+        .optional()
+        .describe("Return only the last N calls"),
     },
     async (args) => handleGetApiCalls(store, args)
   );
@@ -137,6 +154,10 @@ export function createCompanionServer(config: CompanionConfig) {
         .string()
         .optional()
         .describe("Filter by store name or action"),
+      last_n: z
+        .number()
+        .optional()
+        .describe("Return only the last N changes"),
     },
     async (args) => handleGetStateChanges(store, args)
   );
@@ -151,15 +172,24 @@ export function createCompanionServer(config: CompanionConfig) {
   server.tool(
     "get_performance",
     "Get performance metrics (benchmarks, render times) from Reactotron",
-    {},
-    async () => handleGetPerformance(store)
+    {
+      last_n: z
+        .number()
+        .optional()
+        .describe("Return only the last N entries"),
+    },
+    async (args) => handleGetPerformance(store, args)
   );
 
   server.tool(
     "search_logs",
-    "Full-text search across all terminal, Reactotron, Hermes logs and network calls",
+    "Full-text search across all terminal, Reactotron, Hermes logs, network calls, and crash reports",
     {
       query: z.string().describe("Search query (regex supported)"),
+      last_n: z
+        .number()
+        .optional()
+        .describe("Return only the last N results per source"),
     },
     async (args) => handleSearchLogs(store, args)
   );
@@ -228,23 +258,23 @@ export function createCompanionServer(config: CompanionConfig) {
 
   server.resource(
     "status",
-    "rn-companion://status",
+    "wiretap://status",
     { description: "Current connection and app status" },
     async () => {
       const result = handleGetStatus(store, monitors, startTime);
-      return { contents: [{ uri: "rn-companion://status", ...result.content[0] }] };
+      return { contents: [{ uri: "wiretap://status", ...result.content[0] }] };
     }
   );
 
   server.resource(
     "errors-latest",
-    "rn-companion://errors/latest",
+    "wiretap://errors/latest",
     { description: "Latest consolidated errors" },
     async () => {
       const result = handleGetErrors(store);
       return {
         contents: [
-          { uri: "rn-companion://errors/latest", ...result.content[0] },
+          { uri: "wiretap://errors/latest", ...result.content[0] },
         ],
       };
     }
@@ -252,13 +282,13 @@ export function createCompanionServer(config: CompanionConfig) {
 
   server.resource(
     "logs-terminal",
-    "rn-companion://logs/terminal",
+    "wiretap://logs/terminal",
     { description: "Terminal logs stream" },
     async () => {
       const result = handleGetTerminalLogs(store, { last_n: 50 });
       return {
         contents: [
-          { uri: "rn-companion://logs/terminal", ...result.content[0] },
+          { uri: "wiretap://logs/terminal", ...result.content[0] },
         ],
       };
     }
@@ -266,13 +296,13 @@ export function createCompanionServer(config: CompanionConfig) {
 
   server.resource(
     "logs-reactotron",
-    "rn-companion://logs/reactotron",
+    "wiretap://logs/reactotron",
     { description: "Reactotron logs stream" },
     async () => {
       const result = handleGetReactotronLogs(store, { last_n: 50 });
       return {
         contents: [
-          { uri: "rn-companion://logs/reactotron", ...result.content[0] },
+          { uri: "wiretap://logs/reactotron", ...result.content[0] },
         ],
       };
     }
@@ -280,13 +310,13 @@ export function createCompanionServer(config: CompanionConfig) {
 
   server.resource(
     "logs-hermes",
-    "rn-companion://logs/hermes",
+    "wiretap://logs/hermes",
     { description: "Hermes/JS runtime logs" },
     async () => {
       const result = handleGetHermesLogs(store, { last_n: 50 });
       return {
         contents: [
-          { uri: "rn-companion://logs/hermes", ...result.content[0] },
+          { uri: "wiretap://logs/hermes", ...result.content[0] },
         ],
       };
     }
