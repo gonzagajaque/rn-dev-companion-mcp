@@ -186,17 +186,7 @@ export class HermesMonitor extends EventEmitter {
     } else if (isCDPRequestEvent(event as never)) {
       const pending = parseCDPRequest(event as never);
       this.pendingRequests.set(pending.requestId, pending);
-
-      // Also emit a partial network entry immediately
-      const partial = this.store.networkCalls.add({
-        timestamp: new Date().toISOString(),
-        requestId: pending.requestId,
-        method: pending.method,
-        url: pending.url,
-        requestHeaders: pending.requestHeaders,
-        source: "cdp",
-      });
-      this.emit("network-request", partial);
+      this.emit("network-request", pending);
     } else if (isCDPResponseEvent(event as never)) {
       const typedEvent = event as never;
       const requestId = (typedEvent as { params: { requestId: string } }).params.requestId;
