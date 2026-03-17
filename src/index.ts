@@ -16,7 +16,7 @@ function loadConfig(): CompanionConfig {
     filterPatterns: [],
     // Persistence
     persistLogs: false,
-    persistPath: "~/.rn-dev-companion",
+    persistPath: "~/.wiretap",
     persistFlushIntervalMs: 5000,
     persistMaxEntriesOnLoad: 200,
     // Hermes/CDP
@@ -31,15 +31,19 @@ function loadConfig(): CompanionConfig {
     adbPath: "adb",
   };
 
-  try {
-    const configPath = resolve(process.cwd(), "rn-companion.config.json");
-    const raw = readFileSync(configPath, "utf-8");
-    const userConfig = JSON.parse(raw) as Partial<CompanionConfig>;
-    return { ...defaults, ...userConfig };
-  } catch {
-    // No config file found, use defaults
-    return defaults;
+  // Try wiretap.config.json first, fallback to legacy rn-companion.config.json
+  for (const filename of ["wiretap.config.json", "rn-companion.config.json"]) {
+    try {
+      const configPath = resolve(process.cwd(), filename);
+      const raw = readFileSync(configPath, "utf-8");
+      const userConfig = JSON.parse(raw) as Partial<CompanionConfig>;
+      return { ...defaults, ...userConfig };
+    } catch {
+      // Config file not found, try next
+    }
   }
+
+  return defaults;
 }
 
 async function main() {
@@ -50,7 +54,7 @@ async function main() {
   await server.connect(transport);
 
   const handleShutdown = () => {
-    process.stderr.write("[rn-dev-companion] Shutting down...\n");
+    process.stderr.write("[wiretap] Shutting down...\n");
     shutdown();
     process.exit(0);
   };
@@ -58,22 +62,22 @@ async function main() {
   process.on("SIGINT", handleShutdown);
   process.on("SIGTERM", handleShutdown);
 
-  process.stderr.write("[rn-dev-companion] MCP server started\n");
+  process.stderr.write("[wiretap] MCP server started\n");
   process.stderr.write(
-    `[rn-dev-companion] Reactotron port: ${config.reactotronPort}\n`
+    `[wiretap] Reactotron port: ${config.reactotronPort}\n`
   );
   process.stderr.write(
-    `[rn-dev-companion] Auto-detect terminal: ${config.autoDetectTerminal}\n`
+    `[wiretap] Auto-detect terminal: ${config.autoDetectTerminal}\n`
   );
   process.stderr.write(
-    `[rn-dev-companion] Hermes/CDP: ${config.hermesEnabled ? "enabled" : "disabled"}\n`
+    `[wiretap] Hermes/CDP: ${config.hermesEnabled ? "enabled" : "disabled"}\n`
   );
   process.stderr.write(
-    `[rn-dev-companion] Persistence: ${config.persistLogs ? "enabled" : "disabled"}\n`
+    `[wiretap] Persistence: ${config.persistLogs ? "enabled" : "disabled"}\n`
   );
 }
 
 main().catch((err) => {
-  process.stderr.write(`[rn-dev-companion] Fatal error: ${err}\n`);
+  process.stderr.write(`[wiretap] Fatal error: ${err}\n`);
   process.exit(1);
 });
